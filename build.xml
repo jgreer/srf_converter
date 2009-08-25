@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project basedir="." default="dist" name="SRF Converter">
+  <description>Convert images between Garmin's SRF format and PNG.</description>
+  <target name="dist" description="Create the deliverable jar">
+    <taskdef name="jarjar" 
+             classname="com.tonicsystems.jarjar.JarJarTask" 
+             classpath="vendor/jarjar-1.0rc7.jar"/>
+    <mkdir dir="pkg"/>
+    <jarjar destfile="pkg/SrfConverter.jar">
+      <manifest>
+        <attribute name="Main-Class" value="net.techmods.srf_converter.lib.Main"/>
+      </manifest>
+      <fileset dir="classes"/>
+      <zipfileset src="vendor/jruby-complete-1.1.2.jar"/>
+      <zipfileset src="vendor/swingx-0.9.2.jar"/>
+    </jarjar>
+  </target>
+</project>
