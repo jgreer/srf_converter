@@ -1,0 +1,48 @@
+
+File Format Details, Version 1.1
+  Revised 2009-04-08
+
+
+Storage notes:
+  * All numbers are stored little-endian.
+  * The "PString" I describe is a 32-bit integer containing the 
+    length of the string (excluding the integer), followed by the
+    string itself.
+
+* File Header
+      o 16 bytes - string - "GARMIN BITMAP 01"
+      o 8 bytes - two 32-bit ints, [4, 4] -- purpose unknown
+      o 4 bytes - 32-bit int, Number of images contained in SRF
+      o 4 bytes - 32-bit int, [5] -- purpose unknown
+      o N bytes - PString - "578"
+      o 4 bytes - 32-bit int, [6] -- purpose unknown
+      o N bytes - PString - Revision number (Such as "1.00", etc.)
+      o 4 bytes - 32-bit int, [7] -- purpose unknown
+      o N bytes - PString - Garmin's product code?  ("006-D0578-XX")
+
+* Each image follows the file header, each of which has three parts 
+  (header, alpha mask, rgb data).  The first image is the 3d view,
+  followed by the 2d view, and then animation-related views.
+
+  * Image Header
+        o 12 bytes - three 32-bit ints, [0,16,0] -- purpose unknown
+        o 2 bytes - 16-bit int -- height of image
+        o 2 bytes - 16-bit int -- width of image
+        o 2 bytes - [16, 8] -- purpose unknown
+        o 2 bytes - 16-bit int -- 2*width (byte length of rgb lines?)
+        o 4 bytes - all zeroes -- purpose unknown
+  * Image Alpha Mask
+        o 4 bytes - 32-bit int, -- Data type? 11 = alpha?
+        o 4 bytes - 32-bit int, length of image alpha data
+        o width*height bytes - alpha data, 0 = opaque, 128 = trans
+  * Image RGB Data
+        o 4 bytes - 32-bit int, -- Data type? 1 = RGB
+        o 4 bytes - 32-bit int, length of image rgb data
+        o width*height*2 bytes - RBG data as "rrrrrggggg0bbbbb" bits
+
+* Footer that pads the file out to a multiple of 256 bytes, 
+  including a checksum byte
+      o N bytes - 0xFF -- These pad the file out to a multiple of 256
+        total bytes, including the checksum byte.
+      o 1 byte - checksum byte -- use this byte to adjust so that the
+        ascii sum of all bytes in the file is a multiple of 256.
